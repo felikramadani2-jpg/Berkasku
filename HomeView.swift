@@ -1,5 +1,6 @@
 import SwiftUI
 import PhotosUI
+import UniformTypeIdentifiers
 
 struct HomeView: View {
     private enum ImportMode { case files, drive }
