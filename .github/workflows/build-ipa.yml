@@ -19,6 +19,7 @@ jobs:
 
       - name: Build (tanpa tanda tangan)
         run: |
+          set -o pipefail
           xcodebuild \
             -project BerkasKu.xcodeproj \
             -scheme BerkasKu \
@@ -27,7 +28,10 @@ jobs:
             -derivedDataPath build \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGN_IDENTITY=""
+            CODE_SIGN_IDENTITY="" 2>&1 | tee build.log || {
+            grep -E "error:" build.log | sort -u | head -20 | while read -r l; do echo "::error::$l"; done
+            exit 1
+          }
 
       - name: Kemas jadi IPA
         run: |
