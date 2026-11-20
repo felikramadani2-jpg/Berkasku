@@ -1,0 +1,42 @@
+name: Build IPA
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Pasang XcodeGen
+        run: brew install xcodegen
+
+      - name: Buat proyek Xcode
+        run: xcodegen
+
+      - name: Build (tanpa tanda tangan)
+        run: |
+          xcodebuild \
+            -project BerkasKu.xcodeproj \
+            -scheme BerkasKu \
+            -configuration Release \
+            -sdk iphoneos \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY=""
+
+      - name: Kemas jadi IPA
+        run: |
+          mkdir Payload
+          cp -R build/Build/Products/Release-iphoneos/BerkasKu.app Payload/
+          zip -r BerkasKu.ipa Payload
+
+      - name: Unggah IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: BerkasKu-ipa
+          path: BerkasKu.ipa
