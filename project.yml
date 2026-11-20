@@ -1,0 +1,27 @@
+name: BerkasKu
+options:
+  bundleIdPrefix: com.contoh
+  deploymentTarget:
+    iOS: "16.0"
+targets:
+  BerkasKu:
+    type: application
+    platform: iOS
+    sources:
+      - BerkasKu
+    info:
+      path: BerkasKu/Info.plist
+      properties:
+        CFBundleDisplayName: BerkasKu
+        UILaunchScreen: {}
+        UIFileSharingEnabled: true
+        LSSupportsOpeningDocumentsInPlace: true
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.contoh.berkasku
+        SWIFT_VERSION: "5.0"
+        TARGETED_DEVICE_FAMILY: "1"
+        IPHONEOS_DEPLOYMENT_TARGET: "16.0"
+        CODE_SIGN_STYLE: Automatic
