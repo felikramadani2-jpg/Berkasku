@@ -1,5 +1,6 @@
 import SwiftUI
 import PhotosUI
+import QuickLook
 import UniformTypeIdentifiers
 
 enum FileSource: Hashable {
