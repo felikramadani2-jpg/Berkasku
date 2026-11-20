@@ -3,8 +3,6 @@ import PhotosUI
 import UniformTypeIdentifiers
 
 struct HomeView: View {
-    private enum ImportMode { case files, drive }
-
     @ObservedObject private var store = FileStore.shared
     @ObservedObject private var drive = ExternalDrive.shared
 
@@ -12,7 +10,7 @@ struct HomeView: View {
     @State private var recentCount = 0
     @State private var storage: (used: Int64, total: Int64) = (0, 0)
     @State private var showImporter = false
-    @State private var importMode: ImportMode = .files
+    @State private var showDrivePicker = false
     @State private var photoSelection: [PhotosPickerItem] = []
 
     private let columns = [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())]
@@ -46,7 +44,6 @@ struct HomeView: View {
                         }
 
                         Button {
-                            importMode = .files
                             showImporter = true
                         } label: {
                             tile(symbol: "folder.badge.plus", color: .green,
@@ -71,16 +68,24 @@ struct HomeView: View {
             }
             .fileImporter(
                 isPresented: $showImporter,
-                allowedContentTypes: importMode == .drive ? [.folder] : [.item],
-                allowsMultipleSelection: importMode == .files
+                allowedContentTypes: [.item],
+                allowsMultipleSelection: true
             ) { result in
-                guard case .success(let urls) = result else { return }
-                switch importMode {
-                case .files:
+                if case .success(let urls) = result {
                     store.importFiles(urls, into: store.downloads)
-                case .drive:
-                    if let url = urls.first { drive.connect(url) }
                 }
+            }
+            .sheet(isPresented: $showDrivePicker) {
+                DriveFolderPicker(
+                    onPick: { url in
+                        drive.connect(url)
+                        showDrivePicker = false
+                    },
+                    onCancel: {
+                        showDrivePicker = false
+                    }
+                )
+                .ignoresSafeArea()
             }
             .onChange(of: photoSelection) { selection in
                 guard !selection.isEmpty else { return }
@@ -161,8 +166,7 @@ struct HomeView: View {
             }
         } else {
             Button {
-                importMode = .drive
-                showImporter = true
+                showDrivePicker = true
             } label: {
                 tile(symbol: "externaldrive.badge.plus", color: .orange,
                      title: "Flashdisk", subtitle: "Pilih flashdisk")
