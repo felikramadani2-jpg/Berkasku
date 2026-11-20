@@ -8,9 +8,11 @@ targets:
     type: application
     platform: iOS
     sources:
-      - BerkasKu
+      - path: .
+        includes:
+          - "*.swift"
     info:
-      path: BerkasKu/Info.plist
+      path: Config/Info.plist
       properties:
         CFBundleDisplayName: BerkasKu
         UILaunchScreen: {}
